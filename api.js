@@ -3,16 +3,16 @@
  * Реальная работа с Django backend
  */
 
-const API_BASE = 'http://127.0.0.1:8000/api/v1';
+const API_BASE = "http://127.0.0.1:8000/api/v1";
 
 export async function analyzeImage(imageFile, cropType) {
   const formData = new FormData();
 
-  formData.append('image', imageFile);
-  formData.append('crop_type', cropType);
+  formData.append("image", imageFile);
+  formData.append("crop_type", cropType);
 
   const response = await fetch(`${API_BASE}/diagnosis/`, {
-    method: 'POST',
+    method: "POST",
     body: formData,
   });
 
@@ -21,7 +21,10 @@ export async function analyzeImage(imageFile, cropType) {
   console.log("BACKEND RESPONSE:", data);
 
   if (!response.ok) {
-    throw new Error(JSON.stringify(data));
+    return {
+      success: false,
+      error: data.error || "Ошибка анализа. Попробуйте ещё раз.",
+    };
   }
 
   return data;

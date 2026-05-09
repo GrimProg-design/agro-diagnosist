@@ -55,8 +55,22 @@ class DiagnosisView(APIView):
 
         try:
             symptoms = self._run_image_analysis(image_file)
-            result   = self._engine.run(crop_type, symptoms)
 
+            if not symptoms.get("plant_present", True):
+                return Response(
+                    self._recommender.build_error_response(
+                        "Загрузите фотографию растения."
+                    ),
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+
+            if symptoms.get("healthy"):
+                return Response(
+                    self._recommender.build_healthy_response(crop_type),
+                    status=status.HTTP_200_OK,
+                )
+
+            result = self._engine.run(crop_type, symptoms)
             if result is None:
                 return Response(
                     self._recommender.build_error_response(

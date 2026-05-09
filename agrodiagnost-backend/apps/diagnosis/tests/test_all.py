@@ -185,9 +185,11 @@ class DiagnosisAPITest(TestCase):
         PILImage.new("RGB", (100, 100), color=(34, 139, 34)).save(img_bytes, format="JPEG")
         img_bytes.seek(0)
 
+        image_file = SimpleUploadedFile("leaf.jpg", img_bytes.getvalue(), content_type="image/jpeg")
+
         response = self.client.post(
             "/api/v1/diagnosis/",
-            data={"image": img_bytes, "crop_type": "potato"},
+            data={"image": image_file, "crop_type": "potato"},
             format="multipart",
         )
 
@@ -197,3 +199,65 @@ class DiagnosisAPITest(TestCase):
         self.assertIn("diagnosis", data["data"])
         self.assertIn("confidence", data["data"])
         self.assertIn("recommendations", data["data"])
+
+    @patch("apps.diagnosis.views.ImageAnalyzer.analyze")
+    def test_nonplant_request_returns_422(self, mock_analyze: MagicMock) -> None:
+        mock_analyze.return_value = {
+            "plant_present": False,
+            "healthy": False,
+            "yellowing": False,
+            "dark_spots": False,
+            "deformation": False,
+        }
+
+        import io
+        from PIL import Image as PILImage
+
+        img_bytes = io.BytesIO()
+        PILImage.new("RGB", (100, 100), color=(128, 128, 128)).save(img_bytes, format="JPEG")
+        img_bytes.seek(0)
+
+        image_file = SimpleUploadedFile("not_plant.jpg", img_bytes.getvalue(), content_type="image/jpeg")
+
+        response = self.client.post(
+            "/api/v1/diagnosis/",
+            data={"image": image_file, "crop_type": "potato"},
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
+        data = response.json()
+        self.assertFalse(data["success"])
+        self.assertEqual(data["error"], "Загрузите фотографию растения.")
+
+    @patch("apps.diagnosis.views.ImageAnalyzer.analyze")
+    def test_healthy_plant_returns_200(self, mock_analyze: MagicMock) -> None:
+        mock_analyze.return_value = {
+            "plant_present": True,
+            "healthy": True,
+            "yellowing": False,
+            "dark_spots": False,
+            "deformation": False,
+        }
+
+        import io
+        from PIL import Image as PILImage
+
+        img_bytes = io.BytesIO()
+        PILImage.new("RGB", (100, 100), color=(34, 139, 34)).save(img_bytes, format="JPEG")
+        img_bytes.seek(0)
+
+        image_file = SimpleUploadedFile("healthy_leaf.jpg", img_bytes.getvalue(), content_type="image/jpeg")
+
+        response = self.client.post(
+            "/api/v1/diagnosis/",
+            data={"image": image_file, "crop_type": "potato"},
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertTrue(data["success"])
+        self.assertEqual(data["data"]["diagnosis"], "Растение полностью здорово")
+        self.assertEqual(data["data"]["severity"], "low")
+        self.assertEqual(data["data"]["cropType"], "potato")

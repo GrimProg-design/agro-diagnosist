@@ -56,6 +56,24 @@ class RecommendationEngine:
             },
         }
 
+    def build_healthy_response(self, crop_type: str) -> dict:
+        """Return a standardised healthy plant response payload."""
+        return {
+            "success": True,
+            "data": {
+                "diagnosis":       "Растение полностью здорово",
+                "confidence":      98,
+                "severity":        "low",
+                "symptoms":        [],
+                "recommendations": [
+                    "Продолжайте текущий уход за растением.",
+                    "Регулярно проверяйте листья на признаки изменений.",
+                ],
+                "cropType":        crop_type,
+                "analyzedAt":      datetime.now(tz=timezone.utc).isoformat(),
+            },
+        }
+
     def build_error_response(self, message: str) -> dict:
         """Return a standardised error payload."""
         return {
