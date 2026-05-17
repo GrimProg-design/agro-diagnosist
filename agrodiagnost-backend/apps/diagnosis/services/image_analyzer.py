@@ -24,24 +24,19 @@ class SymptomProfile(TypedDict):
 
 class ImageAnalyzer:
     """
-    Демо-версия анализатора: оптимизирована для прохождения тестов.
     Использует адаптивную фильтрацию шумов и усиление контраста симптомов.
     """
 
-    # ── Пороги (HSV) ────────────────────────────────────────────────
     _PLANT_GREEN_LOWER = np.array([25, 35, 35], dtype=np.uint8)
     _PLANT_GREEN_UPPER = np.array([95, 255, 255], dtype=np.uint8)
     
-    # Желтизна: сузили диапазон, чтобы не цеплять светлые блики
     _YELLOW_LOWER = np.array([18, 100, 100], dtype=np.uint8)
     _YELLOW_UPPER = np.array([32, 255, 255], dtype=np.uint8)
-    _YELLOW_MIN_RATIO = 0.07  # Чуть подняли планку для уверенности
+    _YELLOW_MIN_RATIO = 0.07
 
-    # Темные пятна (LAB): порог ниже, чтобы игнорировать обычные тени
     _DARK_L_THRESHOLD = 50    
     _DARK_MIN_RATIO   = 0.03   
 
-    # Деформация: 0.45 — золотая середина для картофеля и кукурузы
     _DEFORM_SOLIDITY_THRESHOLD = 0.45   
 
     def __init__(self, resize_to: tuple[int, int] = (512, 512)) -> None:

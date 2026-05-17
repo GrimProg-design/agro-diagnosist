@@ -29,12 +29,12 @@ class Disease(models.Model):
     """Represents a plant disease associated with a specific crop."""
 
     class Severity(models.TextChoices):
-        LOW    = "low",    "Низкая"
+        LOW = "low", "Низкая"
         MEDIUM = "medium", "Умеренная"
-        HIGH   = "high",   "Высокая"
+        HIGH = "high", "Высокая"
 
-    name            = models.CharField(max_length=200, verbose_name="Название болезни")
-    crop            = models.ForeignKey(
+    name = models.CharField(max_length=200, verbose_name="Название болезни")
+    crop = models.ForeignKey(
         Crop,
         on_delete=models.CASCADE,
         related_name="diseases",
