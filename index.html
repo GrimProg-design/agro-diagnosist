@@ -43,7 +43,7 @@
       </svg>
     </div>
 
-    <!-- NAV -->
+    <!-- навигация -->
     <nav class="nav" role="navigation" aria-label="Главная навигация">
       <div class="nav__inner">
         <div class="nav__logo">
@@ -61,7 +61,6 @@
     </nav>
 
     <main>
-      <!-- HERO -->
       <section class="hero" id="hero" aria-label="Главный экран">
         <div class="hero__content">
           <div class="hero__eyebrow">
@@ -108,13 +107,11 @@
 
         <div class="hero__visual" aria-hidden="true">
           <div class="plant-scene">
-            <!-- Central leaf cluster -->
             <svg
               class="plant-scene__svg"
               viewBox="0 0 400 420"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <!-- Glow -->
               <ellipse
                 cx="200"
                 cy="340"
@@ -122,7 +119,6 @@
                 ry="20"
                 fill="rgba(74,222,128,0.15)"
               />
-              <!-- Stem -->
               <path
                 d="M200 380 C200 320 190 260 200 200"
                 stroke="url(#stemG)"
@@ -130,42 +126,36 @@
                 stroke-linecap="round"
                 fill="none"
               />
-              <!-- Big leaf left -->
               <path
                 d="M200 280 C160 240 100 240 90 200 C130 180 180 220 200 260Z"
                 fill="url(#leafG1)"
                 opacity="0.92"
                 class="leaf leaf--1"
               />
-              <!-- Big leaf right -->
               <path
                 d="M200 250 C240 210 300 210 310 170 C270 150 220 190 200 230Z"
                 fill="url(#leafG2)"
                 opacity="0.88"
                 class="leaf leaf--2"
               />
-              <!-- Mid leaf left -->
               <path
                 d="M200 230 C168 195 120 190 110 155 C148 138 192 165 200 210Z"
                 fill="url(#leafG1)"
                 opacity="0.75"
                 class="leaf leaf--3"
               />
-              <!-- Mid leaf right -->
               <path
                 d="M200 210 C235 170 285 165 295 130 C258 116 215 145 200 188Z"
                 fill="url(#leafG2)"
                 opacity="0.70"
                 class="leaf leaf--4"
               />
-              <!-- Top leaf -->
               <path
                 d="M200 200 C185 155 155 125 150 90 C185 78 205 115 205 160Z"
                 fill="url(#leafG3)"
                 opacity="0.85"
                 class="leaf leaf--5"
               />
-              <!-- Scan line -->
               <rect
                 class="scan-line"
                 x="80"
@@ -175,7 +165,6 @@
                 rx="1"
                 fill="rgba(74,222,128,0.7)"
               />
-              <!-- Data points -->
               <circle
                 cx="130"
                 cy="230"
@@ -292,7 +281,7 @@
         </div>
       </section>
 
-      <!-- DIAGNOSTIC FORM -->
+      <!-- форма диагноза -->
       <section class="diagnostic" id="upload" aria-label="Форма диагностики">
         <div class="container">
           <div class="section-header">
@@ -304,7 +293,7 @@
             </p>
           </div>
 
-          <!-- CROP SELECTOR -->
+          <!-- выбор культуры -->
           <div
             class="crop-selector"
             role="group"
@@ -345,7 +334,7 @@
             </p>
           </div>
 
-          <!-- UPLOAD ZONE -->
+          <!-- загрузка изображения (зона) -->
           <div
             class="upload-zone"
             id="uploadZone"
@@ -589,7 +578,7 @@
               </div>
             </div>
 
-            <!-- Symptoms card -->
+            <!-- карточка симптомов -->
             <div class="result-card" id="resultSymptomsCard">
               <div class="result-card__icon-header">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -610,7 +599,7 @@
               ></ul>
             </div>
 
-            <!-- Treatment card -->
+            <!-- советы по лечению -->
             <div
               class="result-card result-card--treatment"
               id="resultTreatCard"
@@ -634,7 +623,7 @@
               ></ol>
             </div>
 
-            <!-- Image preview in results -->
+            <!-- превьюшка изображения -->
             <div class="result-card result-card--image" id="resultImageCard">
               <div class="result-card__icon-header">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -670,7 +659,7 @@
             </div>
           </div>
 
-          <!-- New diagnosis button -->
+          <!-- Новый диагноз кнопка -->
           <div class="results__actions">
             <button
               class="btn btn--outline btn--large"
@@ -692,7 +681,7 @@
         </div>
       </section>
 
-      <!-- ABOUT -->
+      <!-- о системе -->
       <section class="about" id="about" aria-label="О системе">
         <div class="container">
           <div class="about__inner">
