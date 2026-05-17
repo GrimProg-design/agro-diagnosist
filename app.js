@@ -1,7 +1,4 @@
-/**
- * app.js — АгроДиагност
- * Main application controller. Wires up all UI interactions.
- */
+// AgroDiagnost
 
 import { analyzeImage } from "./api.js";
 import {
@@ -13,18 +10,13 @@ import {
   resetUploadZone,
 } from "./ui.js";
 
-/* ------------------------------------------------------------------ */
-/* State                                                                */
-/* ------------------------------------------------------------------ */
 const state = {
   selectedCrop: null,
   uploadedFile: null,
   previewSrc: null,
 };
 
-/* ------------------------------------------------------------------ */
-/* DOM refs                                                             */
-/* ------------------------------------------------------------------ */
+// HTML элементы
 const cropSelector = document.getElementById("cropSelector");
 const uploadZone = document.getElementById("uploadZone");
 const fileInput = document.getElementById("fileInput");
@@ -35,9 +27,6 @@ const analyseHint = document.getElementById("analyseHint");
 const resultsSection = document.getElementById("results");
 const newDiagnosisBtn = document.getElementById("newDiagnosisBtn");
 
-/* ------------------------------------------------------------------ */
-/* Crop selection                                                       */
-/* ------------------------------------------------------------------ */
 cropSelector.addEventListener("click", (e) => {
   const btn = e.target.closest(".crop-btn");
   if (!btn) return;
@@ -54,9 +43,7 @@ cropSelector.addEventListener("click", (e) => {
   updateAnalyseState();
 });
 
-/* ------------------------------------------------------------------ */
-/* File upload                                                          */
-/* ------------------------------------------------------------------ */
+// загрузка текста
 uploadBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   fileInput.click();
@@ -71,7 +58,7 @@ removeImgBtn.addEventListener("click", (e) => {
   clearFile();
 });
 
-/* Drag & Drop */
+// Перетаскивание картинки
 uploadZone.addEventListener("dragover", (e) => {
   e.preventDefault();
   uploadZone.classList.add("drag-over");
@@ -90,7 +77,6 @@ uploadZone.addEventListener("drop", (e) => {
   if (file) handleFile(file);
 });
 
-/* Keyboard accessibility for zone */
 uploadZone.addEventListener("keydown", (e) => {
   if (e.key === "Enter" || e.key === " ") {
     e.preventDefault();
@@ -114,7 +100,7 @@ function clearFile() {
 
 function validateFile(file) {
   const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-  const maxSize = 10 * 1024 * 1024; // 10 MB
+  const maxSize = 10 * 1024 * 1024;
 
   if (!allowedTypes.includes(file.type)) {
     showToast(
@@ -130,9 +116,7 @@ function validateFile(file) {
   return true;
 }
 
-/* ------------------------------------------------------------------ */
-/* Analyse button state                                                 */
-/* ------------------------------------------------------------------ */
+// Статистика анализа
 function updateAnalyseState() {
   const ready = state.selectedCrop && state.uploadedFile;
   analyseBtn.disabled = !ready;
@@ -149,9 +133,7 @@ function updateAnalyseState() {
   }
 }
 
-/* ------------------------------------------------------------------ */
-/* Analysis                                                             */
-/* ------------------------------------------------------------------ */
+// Анализы
 analyseBtn.addEventListener("click", async () => {
   if (!state.selectedCrop || !state.uploadedFile) return;
 
@@ -178,9 +160,7 @@ analyseBtn.addEventListener("click", async () => {
   }
 });
 
-/* ------------------------------------------------------------------ */
-/* New diagnosis                                                        */
-/* ------------------------------------------------------------------ */
+// кнопка для нового дизайна
 newDiagnosisBtn.addEventListener("click", () => {
   hideSection(resultsSection);
   clearFile();
@@ -193,9 +173,7 @@ newDiagnosisBtn.addEventListener("click", () => {
   document.getElementById("upload").scrollIntoView({ behavior: "smooth" });
 });
 
-/* ------------------------------------------------------------------ */
-/* Toast notifications                                                  */
-/* ------------------------------------------------------------------ */
+// уведомление
 function showToast(message, type = "info") {
   const existing = document.querySelector(".toast");
   if (existing) existing.remove();
@@ -243,7 +221,4 @@ function showToast(message, type = "info") {
   }, 3500);
 }
 
-/* ------------------------------------------------------------------ */
-/* Init                                                                 */
-/* ------------------------------------------------------------------ */
 updateAnalyseState();
