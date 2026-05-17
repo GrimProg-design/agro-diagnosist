@@ -89,3 +89,56 @@ class Disease(models.Model):
             if extracted_symptoms.get(symptom_key, False)
         )
         return matches / len(self.symptoms)
+
+
+class Maturity(models.Model):
+    """Represents maturity stages and parameters for a specific crop."""
+
+    class MaturityStage(models.TextChoices):
+        IMMATURE = "immature", "Незрелое"
+        EARLY = "early", "Ранняя зрелость"
+        OPTIMAL = "optimal", "Оптимальная зрелость"
+        OVERRIPE = "overripe", "Перезрелое"
+
+    crop = models.OneToOneField(
+        Crop,
+        on_delete=models.CASCADE,
+        related_name="maturity",
+        verbose_name="Культура",
+    )
+    
+    # Параметры для определения зрелости (в JSON формате)
+    maturity_indicators = models.JSONField(
+        default=dict,
+        verbose_name="Индикаторы зрелости",
+        help_text="Параметры для определения уровня зрелости (цвет, размер и т.д.)",
+    )
+    
+    # Рекомендации по уходу для каждого этапа зрелости
+    stage_recommendations = models.JSONField(
+        default=dict,
+        verbose_name="Рекомендации по этапам",
+        help_text="Рекомендации для каждого этапа зрелости (immature, early, optimal, overripe)",
+    )
+    
+    # Оптимальный диапазон дней до сбора
+    days_to_harvest_min = models.IntegerField(
+        default=0,
+        verbose_name="Минимум дней до сбора"
+    )
+    days_to_harvest_max = models.IntegerField(
+        default=0,
+        verbose_name="Максимум дней до сбора"
+    )
+
+    class Meta:
+        verbose_name = "Зрелость растения"
+        verbose_name_plural = "Зрелости растений"
+
+    def __str__(self) -> str:
+        return f"Зрелость: {self.crop.name}"
+
+    def get_stage_recommendation(self, stage: str) -> list[str]:
+        """Get care recommendations for a specific maturity stage."""
+        recommendations = self.stage_recommendations.get(stage, [])
+        return [str(r).strip() for r in recommendations if str(r).strip()]

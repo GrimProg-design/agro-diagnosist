@@ -29,3 +29,28 @@ export async function analyzeImage(imageFile, cropType) {
 
   return data;
 }
+
+export async function analyzeMaturity(imageFile, cropType) {
+  const formData = new FormData();
+
+  formData.append("image", imageFile);
+  formData.append("crop_type", cropType);
+
+  const response = await fetch(`${API_BASE}/maturity/`, {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  console.log("MATURITY RESPONSE:", data);
+
+  if (!response.ok) {
+    return {
+      success: false,
+      error: data.error || "Ошибка анализа зрелости. Попробуйте ещё раз.",
+    };
+  }
+
+  return data;
+}

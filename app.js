@@ -1,9 +1,10 @@
 // AgroDiagnost
 
-import { analyzeImage } from "./api.js";
+import { analyzeImage, analyzeMaturity } from "./api.js";
 import {
   setButtonLoading,
   renderResults,
+  renderMaturityResults,
   showSection,
   hideSection,
   showFilePreview,
@@ -14,6 +15,7 @@ const state = {
   selectedCrop: null,
   uploadedFile: null,
   previewSrc: null,
+  analysisMode: null, // "diagnosis" or "maturity"
 };
 
 // HTML элементы
@@ -23,7 +25,9 @@ const fileInput = document.getElementById("fileInput");
 const uploadBtn = document.getElementById("uploadBtn");
 const removeImgBtn = document.getElementById("removeImg");
 const analyseBtn = document.getElementById("analyseBtn");
+const maturityBtn = document.getElementById("maturityBtn");
 const analyseHint = document.getElementById("analyseHint");
+const maturityHint = document.getElementById("maturityHint");
 const resultsSection = document.getElementById("results");
 const newDiagnosisBtn = document.getElementById("newDiagnosisBtn");
 
@@ -121,15 +125,21 @@ function updateAnalyseState() {
   const ready = state.selectedCrop && state.uploadedFile;
   analyseBtn.disabled = !ready;
   analyseBtn.setAttribute("aria-disabled", String(!ready));
+  maturityBtn.disabled = !ready;
+  maturityBtn.setAttribute("aria-disabled", String(!ready));
 
   if (!state.selectedCrop && !state.uploadedFile) {
     analyseHint.textContent = "Выберите культуру и загрузите изображение";
+    maturityHint.textContent = "Выберите культуру и загрузите изображение";
   } else if (!state.selectedCrop) {
     analyseHint.textContent = "Выберите тип культуры";
+    maturityHint.textContent = "Выберите тип культуры";
   } else if (!state.uploadedFile) {
     analyseHint.textContent = "Загрузите изображение растения";
+    maturityHint.textContent = "Загрузите изображение растения";
   } else {
     analyseHint.textContent = "Готово к анализу";
+    maturityHint.textContent = "Готово к определению зрелости";
   }
 }
 
@@ -157,6 +167,36 @@ analyseBtn.addEventListener("click", async () => {
     showToast("Сервер недоступен. Проверьте подключение.", "error");
   } finally {
     setButtonLoading(analyseBtn, false);
+  }
+});
+
+// Определение зрелости
+maturityBtn.addEventListener("click", async () => {
+  if (!state.selectedCrop || !state.uploadedFile) return;
+
+  setButtonLoading(maturityBtn, true);
+  hideSection(resultsSection);
+
+  try {
+    const response = await analyzeMaturity(
+      state.uploadedFile,
+      state.selectedCrop,
+    );
+
+    if (response.success) {
+      renderMaturityResults(response.data, state.previewSrc);
+      showSection(resultsSection);
+    } else {
+      showToast(
+        response.error || "Ошибка определения зрелости. Попробуйте ещё раз.",
+        "error",
+      );
+    }
+  } catch (err) {
+    console.error("[АгроДиагност] Maturity analysis error:", err);
+    showToast("Сервер недоступен. Проверьте подключение.", "error");
+  } finally {
+    setButtonLoading(maturityBtn, false);
   }
 });
 

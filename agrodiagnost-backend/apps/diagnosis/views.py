@@ -15,9 +15,14 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.diagnosis.models import Maturity
 from apps.diagnosis.serializers import DiagnosisRequestSerializer
 from apps.diagnosis.services.diagnosis_engine import DiagnosisEngine
 from apps.diagnosis.services.image_analyzer import ImageAnalyzer
+from apps.diagnosis.services.maturity_analyzer import MaturityAnalyzer
+from apps.diagnosis.services.maturity_recommendation_engine import (
+    MaturityRecommendationEngine,
+)
 from apps.diagnosis.services.recommendation_engine import RecommendationEngine
 
 logger = logging.getLogger(__name__)
@@ -109,5 +114,86 @@ class DiagnosisView(APIView):
 
         try:
             return self._analyzer.analyze(tmp_path)
+        finally:
+            tmp_path.unlink(missing_ok=True)
+
+
+class MaturityView(APIView):
+    """
+    Analyze plant maturity from an image.
+
+    POST /api/v1/maturity/
+    Content-Type: multipart/form-data
+    Fields: image (file), crop_type (string)
+    """
+
+    parser_classes = [MultiPartParser]
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._analyzer = MaturityAnalyzer()
+        self._recommender = MaturityRecommendationEngine()
+
+    def post(self, request: Request) -> Response:
+        serializer = DiagnosisRequestSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                {"success": False, "errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        image_file = serializer.validated_data["image"]
+        crop_type = serializer.validated_data["crop_type"]
+
+        try:
+            profile = self._run_maturity_analysis(image_file, crop_type)
+
+            # Try to get maturity object from DB for recommendations
+            try:
+                from apps.diagnosis.models import Crop
+                crop_obj = Crop.objects.get(code=crop_type)
+                maturity_obj = Maturity.objects.filter(crop=crop_obj).first()
+            except Exception:
+                maturity_obj = None
+
+            response_data = self._recommender.build_response(
+                profile, crop_type, maturity_obj
+            )
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except ValueError as exc:
+            logger.warning("Maturity analysis failed: %s", exc)
+            return Response(
+                self._recommender.build_error_response(
+                    "Не удалось обработать изображение. Убедитесь, что на фото видно растение."
+                ),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as exc:
+            logger.exception("Unexpected error during maturity analysis: %s", exc)
+            return Response(
+                self._recommender.build_error_response(
+                    "Внутренняя ошибка сервера."
+                ),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    # ── Private ───────────────────────────────────────────────────────
+
+    def _run_maturity_analysis(
+        self, image_file, crop_type: str
+    ) -> dict:
+        """
+        Save the uploaded file to a temp path, run MaturityAnalyzer, clean up.
+        """
+        suffix = Path(image_file.name).suffix or ".jpg"
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+            for chunk in image_file.chunks():
+                tmp.write(chunk)
+            tmp_path = Path(tmp.name)
+
+        try:
+            return self._analyzer.analyze(tmp_path, crop_type)
         finally:
             tmp_path.unlink(missing_ok=True)
