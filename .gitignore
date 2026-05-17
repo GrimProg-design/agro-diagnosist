@@ -1,1 +1,11 @@
 .DS_Store
+agrodiagnost-backend/venv/
+**/__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.env
+.venv
+venv/
+dist/
+build/
