@@ -18,7 +18,7 @@ from apps.diagnosis.services.recommendation_engine import RecommendationEngine
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 
-# ── Model tests ────────────────────────────────────────────────────────────
+#  Model tests
 
 class DiseaseMatchScoreTest(TestCase):
     def setUp(self) -> None:
@@ -56,7 +56,7 @@ class DiseaseMatchScoreTest(TestCase):
         self.assertEqual(score, 0.0)
 
 
-# ── Repository tests ───────────────────────────────────────────────────────
+# Repository tests
 
 class DiseaseRepositoryTest(TestCase):
     def setUp(self) -> None:
@@ -93,7 +93,7 @@ class DiseaseRepositoryTest(TestCase):
         self.assertIsNone(result)
 
 
-# ── DiagnosisEngine tests ──────────────────────────────────────────────────
+# DiagnosisEngine tests
 
 class DiagnosisEngineTest(TestCase):
     def setUp(self) -> None:
@@ -123,7 +123,7 @@ class DiagnosisEngineTest(TestCase):
         self.assertLessEqual(result.confidence, 97)
 
 
-# ── RecommendationEngine tests ─────────────────────────────────────────────
+# RecommendationEngine tests
 
 class RecommendationEngineTest(TestCase):
     def test_build_response_structure(self) -> None:
@@ -155,7 +155,7 @@ class RecommendationEngineTest(TestCase):
         self.assertEqual(resp["error"], "Ошибка теста")
 
 
-# ── API integration test ───────────────────────────────────────────────────
+# API integration test
 
 class DiagnosisAPITest(TestCase):
     def setUp(self) -> None:

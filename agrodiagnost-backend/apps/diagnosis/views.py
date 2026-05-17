@@ -100,7 +100,7 @@ class DiagnosisView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    # ── Private ───────────────────────────────────────────────────────
+    # Private
 
     def _run_image_analysis(self, image_file) -> dict[str, bool]:
         """
@@ -149,7 +149,6 @@ class MaturityView(APIView):
         try:
             profile = self._run_maturity_analysis(image_file, crop_type)
 
-            # Try to get maturity object from DB for recommendations
             try:
                 from apps.diagnosis.models import Crop
                 crop_obj = Crop.objects.get(code=crop_type)
@@ -179,7 +178,7 @@ class MaturityView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    # ── Private ───────────────────────────────────────────────────────
+    # Private
 
     def _run_maturity_analysis(
         self, image_file, crop_type: str

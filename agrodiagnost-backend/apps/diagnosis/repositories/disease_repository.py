@@ -49,7 +49,6 @@ class DiseaseRepository:
         if not diseases:
             return None
 
-        # return max(diseases, key=lambda d: d.match_score(extracted_symptoms))
         return max(
             diseases,
             key=lambda d: (
