@@ -17,9 +17,6 @@ const SEVERITY_LABELS = {
   low: "Низкая угроза",
 };
 
-/**
- * Show loading state on the analyse button.
- */
 export function setButtonLoading(btn, loading) {
   const content = btn.querySelector(".btn__content");
   const loadingEl = btn.querySelector(".btn__loading");
@@ -53,7 +50,7 @@ export function renderResults(result, imageSrc) {
     analyzedAt,
   } = result;
 
-  // Main card
+  // главная карточка
   const badge = document.getElementById("resultSeverity");
   badge.textContent = SEVERITY_LABELS[severity] || severity;
   badge.className = `result-card__badge severity--${severity}`;
@@ -64,7 +61,7 @@ export function renderResults(result, imageSrc) {
     _formatDate(analyzedAt);
   document.getElementById("resultDiagnosis").textContent = diagnosis;
 
-  // Confidence meter — animate after a tick for CSS transition
+  // анимации
   const fill = document.getElementById("confidenceFill");
   const valueEl = document.getElementById("confidenceValue");
   const track = document.getElementById("confidenceTrack");
@@ -81,7 +78,7 @@ export function renderResults(result, imageSrc) {
     });
   });
 
-  // Symptoms
+  // симптомы
   const symptomList = document.getElementById("symptomList");
   symptomList.innerHTML = "";
   symptoms.forEach((s, i) => {
@@ -91,7 +88,7 @@ export function renderResults(result, imageSrc) {
     symptomList.appendChild(li);
   });
 
-  // Recommendations
+  // рекомендации
   const treatmentList = document.getElementById("treatmentList");
   treatmentList.innerHTML = "";
   recommendations.forEach((r, i) => {
@@ -101,7 +98,7 @@ export function renderResults(result, imageSrc) {
     treatmentList.appendChild(li);
   });
 
-  // Image
+  // изображения
   const resultImage = document.getElementById("resultImage");
   resultImage.src = imageSrc;
   resultImage.alt = `Снимок для диагностики: ${diagnosis}`;
@@ -126,7 +123,6 @@ export function renderMaturityResults(result, imageSrc) {
     analyzedAt,
   } = result;
 
-  // Update main card with maturity info
   const badge = document.getElementById("resultSeverity");
   badge.textContent = stage_label || maturity_stage;
   badge.className = `result-card__badge maturity--${maturity_stage}`;
@@ -137,7 +133,6 @@ export function renderMaturityResults(result, imageSrc) {
     _formatDate(analyzedAt);
   document.getElementById("resultDiagnosis").textContent = status_message;
 
-  // Confidence meter
   const fill = document.getElementById("confidenceFill");
   const valueEl = document.getElementById("confidenceValue");
   const track = document.getElementById("confidenceTrack");
@@ -154,7 +149,6 @@ export function renderMaturityResults(result, imageSrc) {
     });
   });
 
-  // Maturity indicators
   const symptomList = document.getElementById("symptomList");
   symptomList.innerHTML = "";
 
@@ -175,7 +169,7 @@ export function renderMaturityResults(result, imageSrc) {
     });
   }
 
-  // Care tips / Recommendations
+  // подсказки о лечении
   const treatmentList = document.getElementById("treatmentList");
   treatmentList.innerHTML = "";
 
@@ -188,24 +182,19 @@ export function renderMaturityResults(result, imageSrc) {
     treatmentList.appendChild(li);
   });
 
-  // Image
+  // изображение
   const resultImage = document.getElementById("resultImage");
   resultImage.src = imageSrc;
   resultImage.alt = `Снимок для определения зрелости: ${stage_label}`;
 
-  // Add harvest readiness info if available
   _renderHarvestReadiness(harvest_readiness);
 }
 
-/**
- * Render harvest readiness status.
- */
 function _renderHarvestReadiness(harvestReadiness) {
   if (!harvestReadiness) return;
 
   const { ready, percentage, message } = harvestReadiness;
 
-  // Try to update a harvest readiness indicator if it exists
   const harvestElement = document.getElementById("harvestReadiness");
   if (harvestElement) {
     harvestElement.innerHTML = `
