@@ -3,7 +3,7 @@
  * Реальная работа с Django backend
  */
 
-const API_BASE = "http://127.0.0.1:8000/api/v1";
+const API_BASE = "https://agro-diagnosist.onrender.com/api/v1";
 
 export async function analyzeImage(imageFile, cropType) {
   const formData = new FormData();
